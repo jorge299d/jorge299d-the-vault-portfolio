@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE VAULT | SYSTEM V10.46 (WIDER_MODAL_INFO)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cockpit-amber': '#FFB300', 
+                        'cockpit-green': '#39ff14', 
+                        'cockpit-dark': '#050505',
+                    },
+                    fontFamily: {
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    animation: {
+                        'scan': 'scan 4s linear infinite',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: 0, transform: 'translateY(20px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root { 
+            --amber: #FFB300; 
+            --green: #39ff14;
+        }
+
+        body {
+            background-color: #050505;
+            color: #d4d4d4;
+            font-family: 'JetBrains Mono', monospace;
+            cursor: crosshair;
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
+        body.loaded { overflow-y: auto; }
+
+        section { scroll-margin-top: 45px; }
+
+        /* --- BACKGROUND TÁCTICO --- */
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #050505;
+            z-index: -3; pointer-events: none;
+            background-image: linear-gradient(90deg, rgba(255, 179, 0, 0.05) 1px, transparent 1px);
+            background-size: 33% 100%; 
+        }
+        
+        .bg-noise {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.05; z-index: -2; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .bg-vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, transparent 10%, #000000 120%);
+            z-index: -1; pointer-events: none;
+        }
+
+        /* --- INTERACTIONS --- */
+        .nav-item:hover { background-color: var(--amber); color: #000; box-shadow: 0 0 15px rgba(255, 179, 0, 0.5); }
+        
+        .filter-btn { border: 1px solid #333; color: #666; transition: all 0.3s ease; cursor: pointer; }
+        .filter-btn:hover { color: var(--amber); border-color: var(--amber); }
+        .filter-btn.active { border-color: var(--amber); color: var(--amber); background: rgba(255, 179, 0, 0.1); box-shadow: 0 0 15px rgba(255, 179, 0, 0.1); }
+
+        .tech-card { background: #0a0a0a; border: 1px solid #262626; transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tech-card:hover { border-color: var(--amber); box-shadow: inset 0 0 30px rgba(255, 179, 0, 0.1); transform: translateY(-2px); }
+
+        /* --- ACCESS BUTTON --- */
+        .btn-access { position: relative; background-color: var(--amber); color: #000; border: 1px solid var(--amber); transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); cursor: pointer; overflow: hidden; font-weight: 800; }
+        .btn-access:hover { box-shadow: 0 0 25px rgba(255, 179, 0, 0.6); letter-spacing: 0.2em; }
+        .btn-access.charging { animation: jetChargeOriginal 0.8s forwards ease-in-out; pointer-events: none; color: transparent; }
+        .btn-access.granted { background-color: var(--green) !important; border-color: var(--green) !important; color: #000 !important; box-shadow: 0 0 30px var(--green); transform: scale(1.05); }
+
+        @keyframes jetChargeOriginal {
+            0% { transform: scale(1); background-color: var(--amber); }
+            50% { transform: scale(0.9); background-color: #fff; opacity: 0.8; }
+            100% { transform: scale(1.05); background-color: var(--green); }
+        }
+        
+        #more-projects { transition: all 0.5s ease; }
+        .hidden-grid { display: none; }
+
+        /* --- REDES SOCIALES --- */
+        .social-sidebar { display: flex; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+        .social-link { position: relative; color: #666; text-decoration: none; transition: all 0.3s ease; font-size: 10px; font-weight: bold; letter-spacing: 0.1em; padding-left: 15px; cursor: pointer; }
+        .social-link::before { content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; background-color: var(--amber); opacity: 0; transition: all 0.3s ease; }
+        .social-link:hover { color: #fff; }
+        .social-link:hover::before { opacity: 1; }
+        .social-link.disabled { opacity: 0.4; cursor: not-allowed; }
+        .social-link.disabled:hover { color: #666; }
+        .social-link.disabled::before { display: none; }
+
+        /* --- MODALES --- */
+        .modal-overlay { backdrop-filter: blur(10px); }
+        #project-modal-content { scrollbar-width: thin; scrollbar-color: var(--amber) #111; }
+        #project-modal-content::-webkit-scrollbar { width: 6px; }
+        #project-modal-content::-webkit-scrollbar-track { background: #111; }
+        #project-modal-content::-webkit-scrollbar-thumb { background-color: var(--amber); }
+
+        #boot-screen {
+            position: fixed; inset: 0; background-color: #000; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start;
+            padding: 2rem; font-family: 'JetBrains Mono', monospace;
+            transition: opacity 0.5s ease;
+        }
+        .fade-out-screen { opacity: 0; pointer-events: none; }
+
+    </style>
+</head>
+<body>
+
+    <audio id="sfx-hover" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio> 
+    <audio id="sfx-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio> 
+    <audio id="sfx-boot" src="https://assets.mixkit.co/active_storage/sfx/2044/2044-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-jet-start" src="https://assets.mixkit.co/active_storage/sfx/1672/1672-preview.mp3" preload="auto"></audio> 
+    <audio id="sfx-copy" src="https://assets.mixkit.co/active_storage/sfx/1110/1110-preview.mp3" preload="auto"></audio>
+    <audio id="sfx-access" src="https://assets.mixkit.co/active_storage/sfx/2043/2043-preview.mp3" preload="auto"></audio>
+
+    <div id="boot-screen">
+        <div id="boot-log" class="mb-8 w-full max-w-2xl text-cockpit-amber text-xs"></div>
+        <div class="w-full h-1 bg-gray-900 overflow-hidden relative max-w-md">
+            <div id="boot-bar" class="h-full bg-cockpit-amber w-0 transition-all duration-300"></div>
+        </div>
+        <div class="mt-2 text-xs text-gray-500">SYSTEM INITIALIZATION // V10.46 (WIDER_MODAL_INFO)</div>
+    </div>
+
+    <div id="contact-modal" class="modal-overlay fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 p-4">
+        <div class="w-full max-w-lg bg-[#050505] border border-cockpit-amber p-8 md:p-12 relative overflow-hidden">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-cockpit-amber font-bold text-xl hover-trigger">[X]</button>
+            <div class="absolute top-0 left-0 w-full h-1 bg-cockpit-amber animate-pulse"></div>
+            <div class="absolute bottom-4 right-4 text-[9px] text-gray-700 font-mono">ENCRYPTED_CHANNEL_OPEN</div>
+            <h2 class="text-3xl font-extrabold text-white mb-2 uppercase">PILOT<br>ACCESS</h2>
+            <p class="text-xs text-cockpit-amber font-mono mb-8 tracking-widest">/// ESTABLISH CONNECTION</p>
+            <div class="space-y-4">
+                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex items-center justify-between group hover:border-cockpit-amber transition-colors">
+                    <div>
+                        <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">SECURE LINE</div>
+                        <div class="text-lg font-bold text-white font-mono">+1 778 7893823</div>
+                    </div>
+                    <button id="btn-copy-phone" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-1 hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold">COPY NUM</button>
+                </div>
+                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex items-center justify-between group hover:border-cockpit-amber transition-colors">
+                    <div>
+                        <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">DIGITAL RELAY</div>
+                        <div class="text-lg font-bold text-white font-mono">thevaultprojectt@gmail.com</div>
+                    </div>
+                    <button id="btn-copy-email" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-1 hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold">COPY ADDR</button>
+                </div>
+                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex items-center justify-between group hover:border-cockpit-amber transition-colors">
+                    <div>
+                        <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">VISUAL FEED</div>
+                        <div class="text-lg font-bold text-white font-mono">@THEVAULTPROJECT_</div>
+                    </div>
+                    <a href="https://www.instagram.com/thevaultproject_/" target="_blank" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-1 hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold inline-block text-center">OPEN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal" class="modal-overlay fixed inset-0 z-[90] hidden flex flex-col bg-[#050505] text-white">
+        <div class="flex justify-between items-center p-6 border-b border-[#333] bg-[#050505] z-50 shadow-md">
+            <div class="text-xs font-bold text-cockpit-amber tracking-widest">/// PROJECT FILE LOADED</div>
+            <button id="close-project-modal" class="text-gray-500 hover:text-white font-bold text-2xl hover-trigger">[CLOSE X]</button>
+        </div>
+        
+        <div id="project-modal-content" class="flex-1 overflow-y-auto p-6 md:p-12">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 relative">
+                
+                <div class="lg:col-span-2 space-y-8 lg:sticky lg:top-0 lg:h-fit">
+                    <div>
+                        <h2 id="modal-title" class="text-4xl md:text-5xl font-extrabold uppercase leading-none mb-6 text-white break-words">PROJECT TITLE</h2>
+                        <div class="w-12 h-1 bg-cockpit-amber mb-6"></div>
+                        <p id="modal-desc" class="text-gray-400 font-mono text-sm leading-relaxed"></p>
+                    </div>
+                    <div class="border-t border-[#333] pt-4">
+                        <div class="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-2">Technical Data</div>
+                        <ul id="modal-meta" class="space-y-1 text-xs font-mono text-gray-300"></ul>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-3">
+                    <div id="modal-gallery" class="grid grid-cols-1 gap-8"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-grid"></div>
+    <div class="bg-noise"></div>
+    <div class="bg-vignette"></div>
+
+    <div id="main-interface" class="opacity-0 transition-opacity duration-1000">
+
+        <nav class="fixed top-0 left-0 w-full z-50 flex justify-between items-center pl-6 pr-0 border-b border-[#333] bg-[#050505]/95 backdrop-blur-md">
+            <div class="text-sm font-extrabold tracking-[0.2em] hover-trigger cursor-pointer text-cockpit-amber" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">[THE_VAULT]</div>
+            <div class="hidden lg:flex space-x-8 text-[10px] text-gray-500 font-bold">
+                <span>ALT: 299,007 FT</span>
+                <span>MACH: 7.00</span>
+                <span class="flex items-center text-cockpit-green"><span class="w-2 h-2 bg-cockpit-green rounded-full animate-pulse mr-2 shadow-[0_0_10px_#39ff14]"></span>ONLINE</span>
+            </div>
+            <div class="flex space-x-0 border-l border-[#333]">
+                <a href="#" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;" class="nav-item hover-trigger px-6 py-4 border-r border-[#333] text-[10px] uppercase tracking-widest font-bold">Index</a>
+                <a href="#identity" class="nav-item hover-trigger px-6 py-4 border-r border-[#333] text-[10px] uppercase tracking-widest font-bold">Identity</a>
+                <a href="#archive" class="nav-item hover-trigger px-6 py-4 border-r border-[#333] text-[10px] uppercase tracking-widest font-bold">Archive</a>
+                <button id="nav-contact-btn" class="btn-access hover-trigger px-8 py-4 text-[10px] uppercase tracking-widest font-bold flex items-center gap-2">
+                    Access <span class="text-lg leading-none">›</span>
+                </button>
+            </div>
+        </nav>
+
+        <main class="relative z-10 pt-20 px-4 md:px-8 max-w-screen-[1920px] mx-auto border-l border-r border-[#333]">
+
+            <section id="hero" class="min-h-[85vh] flex flex-col justify-center relative border-b border-[#333]">
+                <div class="p-8 md:p-24 z-10">
+                    <div>
+                        <p class="text-xs text-cockpit-amber mb-4 tracking-[0.3em] font-bold">/// EST. 2025_</p>
+                        <h1 class="text-7xl md:text-[10rem] font-extrabold uppercase leading-[0.8] tracking-tighter text-white mb-6">
+                            VECTOR<br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-gray-500 to-white">ARC-HITECT.</span>
+                        </h1>
+                        <p class="text-lg md:text-xl text-cockpit-amber font-bold tracking-[0.2em] uppercase">WELCOME TO THE FLOW STATE.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="identity" class="border-b border-[#333] py-24">
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-0">
+                    <div class="lg:col-span-2 border-r border-[#333] p-8 bg-[#080808] relative group">
+                        <div class="absolute top-1/4 left-0 w-full h-[1px] bg-cockpit-amber opacity-30 z-20"></div>
+                        <div class="absolute bottom-1/4 left-0 w-full h-[1px] bg-cockpit-amber opacity-30 z-20"></div>
+                        <div class="absolute top-0 left-1/3 h-full w-[1px] bg-cockpit-amber opacity-30 z-20"></div>
+                        <div class="absolute top-10 right-4 text-[9px] text-cockpit-amber font-mono rotate-90 origin-right opacity-70">AKA: JD</div>
+                        
+                        <div class="w-full h-[500px] bg-[#111] relative z-10 overflow-hidden">
+                            <img src="assets/profile.jpg" 
+                                 onerror="this.src='https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887&auto=format&fit=crop'"
+                                 class="w-full h-full object-cover grayscale contrast-125" 
+                                 alt="Profile Picture">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-cockpit-amber/50 animate-scan z-20 shadow-[0_0_15px_#ffb300]"></div>
+                        </div>
+                        
+                        <div class="mt-4 flex justify-between font-mono text-[10px] text-cockpit-amber">
+                            <span>ID: JORGE OCHOA</span>
+                            <span>STATUS: ACTIVE</span>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-3 p-8 md:p-16 flex flex-col justify-center relative">
+                        <div class="relative z-10">
+                            <h2 class="text-5xl font-extrabold uppercase mb-8 tracking-tight text-white">IDENTITY<span class="text-cockpit-amber">_</span>PROTOCOL</h2>
+                            
+                            <div class="space-y-6 text-gray-300 leading-relaxed font-light">
+                                <p class="text-xl border-l-2 border-cockpit-amber pl-6">
+                                    Operating at the intersection of structure and chaos. 
+                                    A digital architect obsessed with precision and immersive user experiences.
+                                </p>
+                            </div>
+
+                            <div id="bio-expanded" class="hidden space-y-6 text-gray-400 leading-relaxed font-light mt-6 text-sm border-t border-[#333] pt-6 font-mono">
+                                <p>
+                                    <span class="text-cockpit-amber font-bold">[ACCESSING CLASSIFIED ARCHIVE...]</span><br><br>
+                                    With over 5 years of experience creating digital content, managing social media, developing brands, and building software. I am the architect behind the ideas.
+                                </p>
+                                <p>
+                                    I specialize in developing memorable user experiences. Ranging from brand identity and web design to video creation for brands that seek to stand out. My work method is precise and clean, maximizing client ideas in the shortest possible amount of time by focusing on a 'Less is more' methodology.
+                                </p>
+                                <p>
+                                    I don't just create digital content; I engineer memorable digital ecosystems. My workflow is fully optimized for speed and scalable results.
+                                </p>
+                                
+                                <div class="mt-4 border-l-2 border-cockpit-amber pl-4 space-y-1">
+                                    <p>> <strong class="text-white">CORE SKILLS:</strong> Creation, maximization, optimization, adaptability, and project management and development.</p>
+                                    <p>> <strong class="text-white">DIGITAL ARSENAL:</strong> Adobe Suite, Canva, HTML5, JavaScript, Google Suite.</p>
+                                    <p>> <strong class="text-cockpit-green">CURRENT STATUS:</strong> READY FOR DEPLOYMENT.</p>
+                                </div>
+                            </div>
+
+                            <button id="btn-decrypt-bio" class="hover-trigger mt-8 inline-flex items-center text-xs font-bold uppercase tracking-widest text-cockpit-amber border border-cockpit-amber px-6 py-3 hover:bg-cockpit-amber hover:text-black transition-all duration-300">
+                                DECRYPT FULL BIO [+]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="archive" class="py-24 border-b border-[#333] bg-[#080808]">
+                <div class="px-8 md:px-16 mb-8 flex flex-col md:flex-row justify-between items-end relative z-10">
+                   <div>
+                       <h2 class="text-5xl font-extrabold uppercase mb-2 tracking-tight text-white">THE ARCHIVE</h2>
+                       <p class="text-xs text-cockpit-amber font-bold tracking-[0.2em]">/// CLASSIFIED PROJECT DATA</p>
+                   </div>
+               </div>
+
+               <div class="px-8 md:px-16 mb-8 flex flex-wrap gap-4 relative z-10">
+                   <button class="filter-btn active px-6 py-2 text-[10px] font-bold tracking-widest uppercase bg-[#FFB300]/10 border-[#FFB300] text-cockpit-amber" data-filter="all">ALL DATA</button>
+                   <button class="filter-btn px-6 py-2 text-[10px] font-bold tracking-widest uppercase bg-transparent" data-filter="graphic">GRAPHIC (G)</button>
+                   <button class="filter-btn px-6 py-2 text-[10px] font-bold tracking-widest uppercase bg-transparent" data-filter="projects">PROJECTS (P)</button>
+                   <button class="filter-btn px-6 py-2 text-[10px] font-bold tracking-widest uppercase bg-transparent" data-filter="community">COMMUNITY (C)</button>
+               </div>
+   
+               <div id="project-grid-1" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-[#262626] border-t border-[#333]">
+                   
+                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer" data-category="graphic" onclick="openProject('g1')">
+                       <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                       <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/blackwave_1.jpg'); background-color: #111;"></div>
+                       <div class="absolute top-4 right-4 z-20">
+                           <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: G-001</span>
+                       </div>
+                       <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                       <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                           <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">VISUAL_IDENTITY_SYSTEM</h3>
+                           <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: GRAPHIC</p>
+                       </div>
+                   </div>
+
+                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer" data-category="graphic" onclick="openProject('g2')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/caucaya_1.jpg'); background-color: #111;"></div>
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: G-002</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                            <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">CONSTRUCTION_BRANDING</h3>
+                            <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: GRAPHIC</p>
+                        </div>
+                   </div>
+
+                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer" data-category="graphic" onclick="openProject('g3')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/joebikes_1.jpg'); background-color: #111;"></div>
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: G-003</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                            <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">MOBILITY_E_COMMERCE</h3>
+                            <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: GRAPHIC</p>
+                        </div>
+                   </div>
+               </div>
+   
+               <div id="more-projects" class="hidden-grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-[#262626] border-t border-[#333]">
+                   
+                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="graphic" onclick="openProject('g4')">
+                       <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                       <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/elcomal_1.jpg'); background-color: #111;"></div>
+                       <div class="absolute top-4 right-4 z-20">
+                           <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: G-004</span>
+                       </div>
+                       <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                       <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                           <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">RESTAURANT_REBRANDING</h3>
+                           <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: GRAPHIC</p>
+                       </div>
+                   </div>
+
+                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="graphic" onclick="openProject('g5')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/multisector_1.jpg'); background-color: #111;"></div>
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: G-005</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                            <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">MULTI_SECTOR_STRATEGY</h3>
+                            <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: GRAPHIC</p>
+                        </div>
+                    </div>
+
+                    <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="graphic" onclick="openProject('g6')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/wanderlust_1.jpg'); background-color: #111;"></div>
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: G-006</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                            <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">APPAREL_MARKETING</h3>
+                            <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: GRAPHIC</p>
+                        </div>
+                    </div>
+
+                    <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="projects" onclick="openProject('p1')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/greenco_1.jpg'); background-color: #111;"></div>
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: P-001</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                            <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">SAAS_ECOSYSTEM</h3>
+                            <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: PROJECTS</p>
+                        </div>
+                    </div>
+
+                    <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="projects" onclick="openProject('p2')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/joyas_1.jpg'); background-color: #111;"></div>
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: P-002</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                            <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">JEWELRY_CONCEPT_DESIGN</h3>
+                            <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: PROJECTS</p>
+                        </div>
+                    </div>
+
+                    <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="projects" onclick="openProject('p3')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
+                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/rossoneri_1.jpg'); background-color: #111;"></div>
+                        <div class="absolute top-4 right-4 z-20">
+                            <span class="backdrop-blur-md bg-black/20 rounded-md px-2 py-1 text-sm font-bold text-gray-300 group-hover:text-cockpit-amber font-mono transition-colors">ID: P-003</span>
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent z-20 opacity-90"></div>
+                        <div class="absolute bottom-0 left-0 w-full p-8 z-30 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-200">
+                            <h3 class="text-2xl font-extrabold text-white group-hover:text-cockpit-amber transition-colors relative drop-shadow-lg">ROSSONERI BISTRO</h3>
+                            <p class="text-[10px] text-gray-500 font-mono mt-1 relative">CAT: PROJECTS</p>
+                        </div>
+                    </div>
+
+               </div>
+   
+               <div class="p-8 flex justify-center border-t border-[#333] bg-[#0a0a0a]">
+                    <button id="btn-decrypt" class="hover-trigger px-12 py-4 border border-[#333] text-xs font-bold uppercase tracking-widest hover:bg-cockpit-amber hover:border-cockpit-amber hover:text-black transition-all duration-150">
+                        DECRYPT MORE DATA [+]
+                    </button>
+               </div>
+           </section>
+
+            <footer id="footer-contact" class="py-12 px-8 md:px-16 border-t border-[#333] relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center">
+                 <div>
+                    <h2 class="text-2xl font-bold text-white mb-4">INITIATE COLLABORATION</h2>
+                    <div class="social-sidebar mb-8 md:mb-0">
+                        <a href="https://www.instagram.com/thevaultproject_/" target="_blank" class="social-link hover-trigger">INSTAGRAM</a>
+                        <div class="social-link disabled">BEHANCE [COMING SOON]</div>
+                        <div class="social-link hover-trigger" id="social-email-link" data-copy="thevaultprojectt@gmail.com" data-msg="EMAIL_ADDR_COPIED">EMAIL</div>
+                    </div>
+                 </div>
+                 <div class="flex flex-col items-end">
+                     <button id="footer-contact-btn" class="btn-access inline-block px-12 py-4 text-sm font-bold uppercase tracking-widest hover-trigger">
+                       SEND TRANSMISSION
+                     </button>
+                     <div class="mt-4 text-[9px] text-gray-600 font-mono">© 2025 THE VAULT SYSTEMS. ALL RIGHTS RESERVED.</div>
+                 </div>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        // --- AUDIO SYSTEM ---
+        const sfxHover = document.getElementById('sfx-hover');
+        const sfxClick = document.getElementById('sfx-click');
+        const sfxBoot = document.getElementById('sfx-boot');
+        const sfxJet = document.getElementById('sfx-jet-start');
+        const sfxCopy = document.getElementById('sfx-copy');
+        const sfxAccess = document.getElementById('sfx-access');
+
+        sfxHover.volume = 0.2; 
+        sfxClick.volume = 0.4;
+        sfxBoot.volume = 0.4;
+        sfxJet.volume = 0.5; 
+        sfxCopy.volume = 0.5;
+        sfxAccess.volume = 0.4; 
+
+        // --- INTERACTION LOGIC ---
+        function attachAudioTriggers() {
+            const triggers = document.querySelectorAll('.hover-trigger');
+            triggers.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    sfxHover.currentTime = 0;
+                    sfxHover.play().catch(() => {});
+                });
+                
+                if(!el.id.includes('contact-btn') && !el.id.includes('decrypt') && !el.id.includes('copy') && !el.classList.contains('social-link')) {
+                    el.addEventListener('click', () => {
+                        sfxClick.currentTime = 0;
+                        sfxClick.play();
+                    });
+                }
+            });
+        }
+
+        // --- FILTROS (SMART FILTERING) ---
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectItems = document.querySelectorAll('.project-item');
+        const moreProjects = document.getElementById('more-projects');
+        const btnDecrypt = document.getElementById('btn-decrypt');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sfxClick.currentTime = 0;
+                sfxClick.play();
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-[#FFB300]/10', 'border-[#FFB300]', 'text-cockpit-amber');
+                    b.classList.add('bg-transparent', 'border-[#333]', 'text-[#666]');
+                });
+                btn.classList.add('active', 'bg-[#FFB300]/10', 'border-[#FFB300]', 'text-cockpit-amber');
+                btn.classList.remove('bg-transparent', 'border-[#333]', 'text-[#666]');
+                const filterValue = btn.getAttribute('data-filter');
+                
+                if (filterValue !== 'all') {
+                    moreProjects.classList.remove('hidden-grid');
+                    moreProjects.classList.add('grid');
+                    btnDecrypt.style.display = 'none'; 
+                } else {
+                    if(!btnDecrypt.disabled) {
+                        moreProjects.classList.add('hidden-grid');
+                        moreProjects.classList.remove('grid');
+                        btnDecrypt.style.display = 'inline-block';
+                    } else {
+                         btnDecrypt.style.display = 'inline-block';
+                    }
+                }
+
+                projectItems.forEach(item => {
+                    if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // --- DECRYPT BUTTONS ---
+        btnDecrypt.addEventListener('click', () => {
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+            moreProjects.classList.remove('hidden-grid');
+            moreProjects.classList.add('grid');
+            btnDecrypt.textContent = "[SYSTEM_UPDATE: COMPLETE]";
+            btnDecrypt.classList.add('opacity-50', 'cursor-not-allowed');
+            btnDecrypt.disabled = true;
+        });
+
+        const btnDecryptBio = document.getElementById('btn-decrypt-bio');
+        const bioExpanded = document.getElementById('bio-expanded');
+
+        btnDecryptBio.addEventListener('click', () => {
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+            bioExpanded.classList.remove('hidden');
+            bioExpanded.classList.add('animate-fade-in-up');
+            btnDecryptBio.textContent = "[BIO_DATA: UNLOCKED]";
+            btnDecryptBio.classList.add('opacity-50', 'cursor-not-allowed', 'border-gray-700', 'text-gray-500');
+            btnDecryptBio.classList.remove('hover:bg-cockpit-amber', 'hover:text-black', 'text-cockpit-amber', 'border-cockpit-amber');
+            btnDecryptBio.disabled = true;
+        });
+
+        // --- COPY SYSTEM ---
+        function triggerCopy(text, btnElement, msg) {
+            navigator.clipboard.writeText(text);
+            sfxCopy.currentTime = 0; 
+            sfxCopy.play();
+
+            const originalText = btnElement.innerText;
+            
+            if(btnElement.classList.contains('social-link')) {
+                btnElement.innerText = "COPIED!";
+                btnElement.style.color = '#fff'; 
+            } else {
+                btnElement.innerText = "[ COPIED ]";
+                btnElement.style.backgroundColor = '#39ff14'; 
+                btnElement.style.color = '#000000'; 
+                btnElement.style.borderColor = '#39ff14';
+            }
+
+            setTimeout(() => {
+                btnElement.innerText = originalText;
+                
+                if(btnElement.classList.contains('social-link')) {
+                    btnElement.style.color = ''; 
+                } else {
+                    btnElement.style.backgroundColor = '';
+                    btnElement.style.color = '';
+                    btnElement.style.borderColor = '';
+                }
+            }, 2000);
+        }
+
+        document.getElementById('btn-copy-email').addEventListener('click', function() {
+            triggerCopy("thevaultprojectt@gmail.com", this, "EMAIL_ADDR_COPIED");
+        });
+
+        document.getElementById('btn-copy-phone').addEventListener('click', function() {
+            triggerCopy("+1 778 7893823", this, "SECURE_NUM_COPIED");
+        });
+
+        document.getElementById('social-email-link').addEventListener('click', function() {
+             triggerCopy("thevaultprojectt@gmail.com", this, "EMAIL_ADDR_COPIED");
+        });
+
+
+        // --- ACCESS ANIMATION & MODAL ---
+        const contactModal = document.getElementById('contact-modal');
+        const navContactBtn = document.getElementById('nav-contact-btn');
+        const footerContactBtn = document.getElementById('footer-contact-btn');
+        const closeModalBtn = document.getElementById('close-modal');
+
+        function triggerAccessSequence(btnElement) {
+            sfxAccess.currentTime = 0;
+            let playPromise = sfxAccess.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {}).catch(error => {});
+            }
+            
+            btnElement.classList.add('charging');
+
+            setTimeout(() => {
+                btnElement.classList.remove('charging');
+                btnElement.classList.add('granted');
+                btnElement.innerHTML = "ACCESS GRANTED"; 
+
+                setTimeout(() => {
+                    contactModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        btnElement.classList.remove('granted');
+                        btnElement.innerHTML = "Access <span class='text-lg leading-none'>›</span>";
+                    }, 1000);
+                }, 400); 
+            }, 800); 
+        }
+
+        function closeContact() {
+            sfxClick.currentTime = 0;
+            sfxClick.play();
+            contactModal.classList.add('hidden');
+            sfxAccess.pause(); 
+            sfxAccess.currentTime = 0;
+        }
+
+        navContactBtn.addEventListener('click', function() { triggerAccessSequence(this); });
+        footerContactBtn.addEventListener('click', function() { triggerAccessSequence(this); });
+        
+        closeModalBtn.addEventListener('click', closeContact);
+        contactModal.addEventListener('click', (e) => {
+            if (e.target === contactModal) closeContact();
+        });
+
+        // --- BASE DE DATOS DE PROYECTOS (CON TUS ACTUALIZACIONES) ---
+        const projectData = {
+            
+            // BLACKWAVE
+            'g1': {
+                title: "VISUAL_IDENTITY_SYSTEM",
+                desc: "Directed the complete visual evolution of the brand, overseeing all creative phases to establish a professional and impactful identity. My work included the design of core brand assets and mockups, maintaining a high standard of aesthetic consistency and strategic execution.",
+                meta: ["CLIENT: Blackwave", "YEAR: 2023-Now", "ROLE: Creative Director", "TOOLS: Adobe Suite"],
+                
+                // CAMBIO AQUÍ: w-[85%] para que la imagen sea 15% más pequeña en el modal (como en la V43)
+                images: [
+                    "assets/blackwave_1.jpg", 
+                    "assets/blackwave_2.jpg",
+                    "assets/blackwave_3.jpg",
+                    "assets/blackwave_4.jpg" 
+                ]
+            },
+
+            // CAUCAYA SAS
+            'g2': {
+                title: "CONSTRUCTION_BRANDING",
+                desc: "Directed the brand identity development for a construction firm, establishing a robust visual foundation through custom logo design and a strategic color palette. I further expanded the brand’s reach by developing a conversion-focused website, ensuring a professional and impactful digital presence designed for client acquisition.",
+                meta: ["CLIENT: Hugo Mohales", "YEAR: 2025-Now", "ROLE: Graphic Designer", "TOOLS: Adobe Suite"],
+                images: [
+                    "assets/caucaya_1.jpg", 
+                    "assets/caucaya_2.jpg",
+                    "assets/caucaya_3.jpg",
+                    "assets/caucaya_4.jpg"
+                ]
+            },
+
+            // JO-EBIKES
+            'g3': {
+                title: "MOBILITY_E_COMMERCE",
+                desc: "Enhanced the user interface and digital strategy for a specialized mobility platform. By optimizing the website's visual hierarchy and navigation, I improved customer engagement and ensured a modern, cohesive digital experience for the rental and sales market.",
+                meta: ["CLIENT: Jo-ebikes", "YEAR: 2025", "ROLE: Graphic Designer", "TOOLS: Adobe Suite, HTML"],
+                images: [
+                    "assets/joebikes_1.jpg", 
+                    "assets/joebikes_2.jpg",
+                    "assets/joebikes_3.jpg",
+                    "assets/joebikes_4.jpg"
+                ]
+            },
+
+            // EL COMAL
+            'g4': {
+                title: "RESTAURANT_REBRANDING",
+                desc: "Transformed the restaurant’s visual presence by creating a custom, high-character identity. Beyond the primary logo redesign, I established a cohesive aesthetic across various brand touchpoints and designed strategic digital marketing assets to amplify visibility and strengthen market positioning.",
+                meta: ["CLIENT: Private", "YEAR: 2024", "ROLE: Graphic Designer", "TOOLS: Adobe Suite"],
+                images: [
+                    "assets/elcomal_1.jpg", 
+                    "assets/elcomal_2.jpg",
+                    "assets/elcomal_3.jpg",
+                    "assets/elcomal_4.jpg"
+                ]
+            },
+
+            // MULTI SECTOR STRATEGY
+            'g5': {
+                title: "MULTI_SECTOR_STRATEGY",
+                desc: "Provided comprehensive creative and strategic support for a diverse portfolio of brands. My work spanned from designing unique logos and full brand identities to executing digital marketing strategies, developing cohesive visual systems and high-performing campaigns tailored to each market.",
+                meta: ["CLIENT: TVM, Rousse Rivera, Frutigel, RK", "YEAR: 2022-Now", "ROLE: Digital Marketer", "TOOLS: Adobe Suite, Meta Ads"],
+                images: [
+                    "assets/multisector_1.jpg", 
+                    "assets/multisector_2.jpg",
+                    "assets/multisector_3.jpg",
+                    "assets/multisector_4.jpg"
+                ]
+            },
+
+            // WANDERLUST
+            'g6': {
+                title: "APPAREL_MARKETING",
+                desc: "Developed the visual foundations for this apparel brand, including the primary logo design and brand identity. I also executed various e-marketing campaigns and digital advertisements designed to drive brand awareness and customer engagement.",
+                meta: ["CLIENT: Private", "YEAR: 2023-2025", "ROLE: Graphic Designer, Illustrator", "TOOLS: Adobe Suite"],
+                images: [
+                    "assets/wanderlust_1.jpg", 
+                    "assets/wanderlust_2.jpg",
+                    "assets/wanderlust_3.jpg",
+                    "assets/wanderlust_4.jpg"
+                ]
+            },
+
+            // ROSSONERI BISTRO (PROJECTS)
+            'p3': {
+                title: "BISTRO_IDENTITY",
+                desc: "Established the full visual identity, including the primary logo and a custom brand mascot. I directed the digital marketing strategy by creating targeted e-marketing campaigns and advertising assets to strengthen the restaurant’s market presence and brand recognition.",
+                meta: ["CLIENT: Rossoneri Bistro", "YEAR: 2024-2025", "ROLE: Illustrator, Graphic Designer", "TOOLS: Adobe Suite, Google Ads"],
+                images: [
+                    "assets/rossoneri_1.jpg", 
+                    "assets/rossoneri_2.jpg",
+                    "assets/rossoneri_3.jpg",
+                    "assets/rossoneri_4.jpg"
+                ]
+            },
+
+            // GREENCO (P-001)
+            'p1': {
+                title: "SAAS_ECOSYSTEM",
+                desc: "Developed and launched an integrated software ecosystem featuring SaaS ERP, SAG, and POS solutions. Designed to streamline business operations, this platform provides comprehensive tools for payment processing, team management, and operational efficiency, offering a robust alternative to leading industry workforce and point-of-sale systems.",
+                meta: ["CLIENT: Private", "YEAR: 2025- Now", "ROLE: Owner"],
+                images: [
+                    "assets/greenco_1.jpg", 
+                    "assets/greenco_2.jpg",
+                    "assets/greenco_3.jpg",
+                    "assets/greenco_4.jpg"
+                ]
+            },
+
+            // JOYAS 009 (P-002)
+            'p2': {
+                title: "JEWELRY_CONCEPT_DESIGN",
+                desc: "I managed the end-to-end creative development of unique jewelry designs, producing detailed conceptual art and high-quality renders. I ensured every piece remained consistent with the brand's aesthetic while pushing the boundaries of modern product design.",
+                meta: ["CLIENT: Private", "YEAR: 2025-Now", "ROLE: Graphic Designer", "TOOLS: Adobe Suite"],
+                images: [
+                    "assets/joyas_1.jpg", 
+                    "assets/joyas_2.jpg",
+                    "assets/joyas_3.jpg",
+                    "assets/joyas_4.jpg"
+                ]
+            }
+        };
+
+        // --- VISOR DE PROYECTOS (REDUCIDO 15% EL ANCHO - 85%) ---
+        const projectModal = document.getElementById('project-modal');
+        const closeProjectModal = document.getElementById('close-project-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalDesc = document.getElementById('modal-desc');
+        const modalMeta = document.getElementById('modal-meta');
+        const modalGallery = document.getElementById('modal-gallery');
+
+        function openProject(id) {
+            sfxClick.currentTime = 0; sfxClick.play();
+            const data = projectData[id];
+            if(!data) return;
+            modalTitle.textContent = data.title;
+            modalDesc.textContent = data.desc;
+            modalMeta.innerHTML = data.meta.map(item => `<li>> ${item}</li>`).join('');
+            
+            // CAMBIO CLAVE AQUI: w-[85%] mx-auto (Tu solicitud anterior)
+            modalGallery.innerHTML = data.images.map(imgSrc => `
+                <div class="w-[85%] mx-auto bg-[#111] border border-[#262626] overflow-hidden group">
+                    <img src="${imgSrc}" 
+                         onerror="this.src='https://via.placeholder.com/2000x1200/111/333?text=NO+IMAGE+DATA'"
+                         class="w-full h-auto object-cover grayscale group-hover:grayscale-0 transition-all duration-500" 
+                         alt="Project Image">
+                </div>
+            `).join('');
+            
+            projectModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        closeProjectModal.addEventListener('click', () => {
+            sfxClick.currentTime = 0; sfxClick.play();
+            projectModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+
+        // --- BOOT SEQUENCE ---
+        const bootScreen = document.getElementById('boot-screen');
+        const bootLog = document.getElementById('boot-log');
+        const bootBar = document.getElementById('boot-bar');
+        const body = document.body;
+        const bootLines = ["INITIALIZING KERNEL...", "LOADING ASSETS...", "CONNECTING...", "ACCESS GRANTED."];
+        let lineIndex = 0;
+
+        function typeLine() {
+            if (lineIndex < bootLines.length) {
+                const p = document.createElement('p');
+                p.textContent = `> ${bootLines[lineIndex]}`;
+                bootLog.appendChild(p);
+                bootBar.style.width = `${((lineIndex + 1) / bootLines.length) * 100}%`;
+                lineIndex++; setTimeout(typeLine, 150);
+            } else { setTimeout(finishBoot, 1000); }
+        }
+
+        function finishBoot() {
+            sfxBoot.play().catch(() => {});
+            bootScreen.classList.add('fade-out-screen');
+            document.getElementById('main-interface').classList.remove('opacity-0');
+            body.classList.add('loaded');
+            attachAudioTriggers();
+        }
+
+        // FALLBACK DE SEGURIDAD
+        setTimeout(() => {
+            if (!document.body.classList.contains('loaded')) {
+                finishBoot();
+            }
+        }, 4000);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(typeLine, 300);
+        });
+
+    </script>
+</body>
+</html>
