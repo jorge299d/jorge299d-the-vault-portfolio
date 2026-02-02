@@ -2,8 +2,8 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE VAULT | SYSTEM V10.46 (WIDER_MODAL_INFO)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>THE VAULT | SYSTEM V10.47 (FINAL_CENTER_FIX)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&family=Permanent+Marker&display=swap" rel="stylesheet">
     
@@ -125,13 +125,168 @@
         }
         .fade-out-screen { opacity: 0; pointer-events: none; }
 
+        /* ==========================================================
+           CORRECCIONES MÓVILES (SIMETRÍA, QUIEBRES Y FOOTER)
+           Solo afecta pantallas menores a 768px (Celulares/Tablets)
+           ========================================================== */
+        @media (max-width: 768px) {
+            
+            html, body {
+                width: 100% !important;
+                overflow-x: hidden !important;
+                position: relative;
+            }
+
+            main {
+                width: 100% !important;
+                max-width: 100% !important;
+                padding: 0 !important;
+                border: none !important;
+                overflow-x: hidden;
+            }
+
+            /* NAVEGACIÓN SIMÉTRICA */
+            nav {
+                width: 100vw !important;
+                left: 0 !important;
+                right: 0 !important;
+                padding: 1rem 0 !important;
+                margin: 0 !important;
+                flex-direction: column;
+                align-items: center;
+                position: fixed;
+            }
+
+            nav > div:last-child {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                border-left: none !important;
+                gap: 5px;
+                padding: 0 10px;
+            }
+
+            .nav-item {
+                flex: 1 1 auto;
+                text-align: center;
+                padding: 12px 10px !important;
+                border: 1px solid #111 !important;
+                font-size: 10px !important;
+            }
+
+            /* HERO SIMÉTRICO */
+            #hero {
+                min-height: 70vh !important;
+                padding: 4rem 1rem !important;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #hero > div {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                padding: 0 !important;
+            }
+
+            h1 {
+                font-size: 12vw !important;
+                line-height: 0.9 !important;
+                width: 100%;
+                text-align: center;
+                margin-bottom: 1.5rem !important;
+                word-wrap: break-word;
+            }
+
+            #hero p {
+                text-align: center;
+                width: 100%;
+            }
+
+            /* IDENTITY SIMÉTRICO + CORRECCIÓN DE SELECTOR */
+            #identity .grid { display: flex; flex-direction: column; }
+            
+            /* CORRECCIÓN DE ESCRITURA EN SELECTOR CSS (UNA SOLA BARRA) */
+            #identity .lg\:col-span-2 { width: 100%; border-right: none !important; border-bottom: 1px solid #333; padding: 2rem !important; }
+            
+            #identity .lg\:col-span-3 { 
+                padding: 2rem 1.5rem !important; 
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center; /* ESTO CENTRA EL BOTÓN */
+            }
+            
+            #identity .lg\:col-span-3 > div {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center; /* ESTO TAMBIÉN CENTRA EL BOTÓN */
+            }
+
+            /* Título Identity */
+            #identity h2 {
+                font-size: 3.5rem !important;
+                line-height: 1 !important;
+                text-align: center;
+                width: 100%;
+            }
+
+            #identity .border-l-2 { border-l: none !important; border-top: 2px solid #FFB300 !important; padding-left: 0 !important; padding-top: 1rem !important; text-align: center; }
+
+            /* FOOTER CENTRADO */
+            footer { 
+                flex-direction: column; 
+                text-align: center; 
+                padding: 3rem 1.5rem !important; 
+                gap: 2rem; 
+                align-items: center !important; 
+            }
+            
+            .social-sidebar { 
+                align-items: center !important; 
+                width: 100%; 
+            }
+            
+            footer > div:last-child {
+                align-items: center !important;
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #footer-contact-btn { width: 100%; }
+
+            /* ARCHIVE SIMÉTRICO */
+            #archive {
+                text-align: center !important;
+            }
+            
+            #archive .flex.flex-col.md\:flex-row,
+            #archive .flex.flex-wrap.gap-4 {
+                align-items: center !important;
+                justify-content: center !important;
+                text-align: center !important;
+                width: 100%;
+            }
+            
+            #archive h2, 
+            #archive p.text-cockpit-amber {
+                text-align: center !important; 
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
     <audio id="sfx-hover" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3" preload="auto"></audio> 
     <audio id="sfx-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio> 
-    <audio id="sfx-boot" src="https://assets.mixkit.co/active_storage/sfx/2044/2044-preview.mp3" preload="auto"></audio>
     <audio id="sfx-jet-start" src="https://assets.mixkit.co/active_storage/sfx/1672/1672-preview.mp3" preload="auto"></audio> 
     <audio id="sfx-copy" src="https://assets.mixkit.co/active_storage/sfx/1110/1110-preview.mp3" preload="auto"></audio>
     <audio id="sfx-access" src="https://assets.mixkit.co/active_storage/sfx/2043/2043-preview.mp3" preload="auto"></audio>
@@ -141,7 +296,7 @@
         <div class="w-full h-1 bg-gray-900 overflow-hidden relative max-w-md">
             <div id="boot-bar" class="h-full bg-cockpit-amber w-0 transition-all duration-300"></div>
         </div>
-        <div class="mt-2 text-xs text-gray-500">SYSTEM INITIALIZATION // V10.46 (WIDER_MODAL_INFO)</div>
+        <div class="mt-2 text-xs text-gray-500">SYSTEM INITIALIZATION // V10.47 (FINAL_CENTER_FIX)</div>
     </div>
 
     <div id="contact-modal" class="modal-overlay fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 p-4">
@@ -152,27 +307,31 @@
             <h2 class="text-3xl font-extrabold text-white mb-2 uppercase">PILOT<br>ACCESS</h2>
             <p class="text-xs text-cockpit-amber font-mono mb-8 tracking-widest">/// ESTABLISH CONNECTION</p>
             <div class="space-y-4">
-                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex items-center justify-between group hover:border-cockpit-amber transition-colors">
-                    <div>
+                
+                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0 group hover:border-cockpit-amber transition-colors">
+                    <div class="w-full md:w-auto">
                         <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">SECURE LINE</div>
                         <div class="text-lg font-bold text-white font-mono">+1 778 7893823</div>
                     </div>
-                    <button id="btn-copy-phone" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-1 hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold">COPY NUM</button>
+                    <button id="btn-copy-phone" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-2 md:py-1 w-full md:w-auto hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold">COPY NUM</button>
                 </div>
-                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex items-center justify-between group hover:border-cockpit-amber transition-colors">
-                    <div>
+
+                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0 group hover:border-cockpit-amber transition-colors">
+                    <div class="w-full md:w-auto overflow-hidden">
                         <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">DIGITAL RELAY</div>
-                        <div class="text-lg font-bold text-white font-mono">thevaultprojectt@gmail.com</div>
+                        <div class="text-sm md:text-lg font-bold text-white font-mono break-all md:break-normal">thevaultprojectt@gmail.com</div>
                     </div>
-                    <button id="btn-copy-email" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-1 hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold">COPY ADDR</button>
+                    <button id="btn-copy-email" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-2 md:py-1 w-full md:w-auto hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold">COPY ADDR</button>
                 </div>
-                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex items-center justify-between group hover:border-cockpit-amber transition-colors">
-                    <div>
+
+                <div class="border border-[#262626] p-4 bg-[#0a0a0a] flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0 group hover:border-cockpit-amber transition-colors">
+                    <div class="w-full md:w-auto">
                         <div class="text-[9px] text-gray-500 uppercase tracking-widest mb-1">VISUAL FEED</div>
                         <div class="text-lg font-bold text-white font-mono">@THEVAULTPROJECT_</div>
                     </div>
-                    <a href="https://www.instagram.com/thevaultproject_/" target="_blank" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-1 hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold inline-block text-center">OPEN</a>
+                    <a href="https://www.instagram.com/thevaultproject_/" target="_blank" class="hover-trigger text-[10px] bg-gray-800 text-white px-3 py-2 md:py-1 w-full md:w-auto hover:bg-cockpit-amber hover:text-black transition-colors uppercase font-bold inline-block text-center">OPEN</a>
                 </div>
+
             </div>
         </div>
     </div>
@@ -184,9 +343,9 @@
         </div>
         
         <div id="project-modal-content" class="flex-1 overflow-y-auto p-6 md:p-12">
-            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 relative">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 relative">
                 
-                <div class="lg:col-span-2 space-y-8 lg:sticky lg:top-0 lg:h-fit">
+                <div class="lg:col-span-1 space-y-8 lg:sticky lg:top-0 lg:h-fit">
                     <div>
                         <h2 id="modal-title" class="text-4xl md:text-5xl font-extrabold uppercase leading-none mb-6 text-white break-words">PROJECT TITLE</h2>
                         <div class="w-12 h-1 bg-cockpit-amber mb-6"></div>
@@ -198,7 +357,7 @@
                     </div>
                 </div>
 
-                <div class="lg:col-span-3">
+                <div class="lg:col-span-2">
                     <div id="modal-gallery" class="grid grid-cols-1 gap-8"></div>
                 </div>
             </div>
@@ -264,9 +423,10 @@
                             <span>STATUS: ACTIVE</span>
                         </div>
                     </div>
+                    
                     <div class="lg:col-span-3 p-8 md:p-16 flex flex-col justify-center relative">
                         <div class="relative z-10">
-                            <h2 class="text-5xl font-extrabold uppercase mb-8 tracking-tight text-white">IDENTITY<span class="text-cockpit-amber">_</span>PROTOCOL</h2>
+                            <h2 class="text-5xl font-extrabold uppercase mb-8 tracking-tight text-white">IDENTITY<span class="text-cockpit-amber">_</span><br class="md:hidden">PROTOCOL</h2>
                             
                             <div class="space-y-6 text-gray-300 leading-relaxed font-light">
                                 <p class="text-xl border-l-2 border-cockpit-amber pl-6">
@@ -294,7 +454,7 @@
                                 </div>
                             </div>
 
-                            <button id="btn-decrypt-bio" class="hover-trigger mt-8 inline-flex items-center text-xs font-bold uppercase tracking-widest text-cockpit-amber border border-cockpit-amber px-6 py-3 hover:bg-cockpit-amber hover:text-black transition-all duration-300">
+                            <button id="btn-decrypt-bio" class="hover-trigger mt-8 inline-flex items-center justify-center text-xs font-bold uppercase tracking-widest text-cockpit-amber border border-cockpit-amber px-6 py-3 hover:bg-cockpit-amber hover:text-black transition-all duration-300">
                                 DECRYPT FULL BIO [+]
                             </button>
                         </div>
@@ -361,7 +521,7 @@
    
                <div id="more-projects" class="hidden-grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-px bg-[#262626] border-t border-[#333]">
                    
-                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="graphic" onclick="openProject('g4')">
+                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer" data-category="graphic" onclick="openProject('g4')">
                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
                        <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/elcomal_1.jpg'); background-color: #111;"></div>
                        <div class="absolute top-4 right-4 z-20">
@@ -374,7 +534,7 @@
                        </div>
                    </div>
 
-                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="graphic" onclick="openProject('g5')">
+                   <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer" data-category="graphic" onclick="openProject('g5')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
                         <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/multisector_1.jpg'); background-color: #111;"></div>
                         <div class="absolute top-4 right-4 z-20">
@@ -387,7 +547,7 @@
                         </div>
                     </div>
 
-                    <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer animate-fade-in-up" data-category="graphic" onclick="openProject('g6')">
+                    <div class="project-item hover-trigger group relative aspect-[4/3] h-auto bg-[#0a0a0a] border-r border-b border-[#333] overflow-hidden cursor-pointer" data-category="graphic" onclick="openProject('g6')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent z-10"></div>
                         <div class="w-full h-full bg-cover bg-center grayscale contrast-125 opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300" style="background-image: url('assets/wanderlust_1.jpg'); background-color: #111;"></div>
                         <div class="absolute top-4 right-4 z-20">
@@ -442,7 +602,7 @@
                </div>
    
                <div class="p-8 flex justify-center border-t border-[#333] bg-[#0a0a0a]">
-                    <button id="btn-decrypt" class="hover-trigger px-12 py-4 border border-[#333] text-xs font-bold uppercase tracking-widest hover:bg-cockpit-amber hover:border-cockpit-amber hover:text-black transition-all duration-150">
+                    <button id="btn-decrypt" class="hover-trigger px-12 py-4 border border-[#333] text-xs font-bold uppercase tracking-widest hover:bg-cockpit-amber hover:border-cockpit-amber hover:text-black transition-all duration-150 inline-flex items-center justify-center">
                         DECRYPT MORE DATA [+]
                     </button>
                </div>
@@ -472,14 +632,14 @@
         // --- AUDIO SYSTEM ---
         const sfxHover = document.getElementById('sfx-hover');
         const sfxClick = document.getElementById('sfx-click');
-        const sfxBoot = document.getElementById('sfx-boot');
+        // sfxBoot ELIMINADO para evitar error
         const sfxJet = document.getElementById('sfx-jet-start');
         const sfxCopy = document.getElementById('sfx-copy');
         const sfxAccess = document.getElementById('sfx-access');
 
         sfxHover.volume = 0.2; 
         sfxClick.volume = 0.4;
-        sfxBoot.volume = 0.4;
+        // sfxBoot.volume eliminado
         sfxJet.volume = 0.5; 
         sfxCopy.volume = 0.5;
         sfxAccess.volume = 0.4; 
@@ -520,6 +680,7 @@
                 btn.classList.remove('bg-transparent', 'border-[#333]', 'text-[#666]');
                 const filterValue = btn.getAttribute('data-filter');
                 
+                // SMART FILTERING LOGIC:
                 if (filterValue !== 'all') {
                     moreProjects.classList.remove('hidden-grid');
                     moreProjects.classList.add('grid');
@@ -569,7 +730,7 @@
             btnDecryptBio.disabled = true;
         });
 
-        // --- COPY SYSTEM ---
+        // --- COPY SYSTEM (FIXED VISUALS) ---
         function triggerCopy(text, btnElement, msg) {
             navigator.clipboard.writeText(text);
             sfxCopy.currentTime = 0; 
@@ -659,7 +820,7 @@
             if (e.target === contactModal) closeContact();
         });
 
-        // --- BASE DE DATOS DE PROYECTOS (CON TUS ACTUALIZACIONES) ---
+        // --- BASE DE DATOS DE PROYECTOS (ACTUALIZADO: QUIEBRES SOLO EN MODAL) ---
         const projectData = {
             
             // BLACKWAVE
@@ -677,9 +838,9 @@
                 ]
             },
 
-            // CAUCAYA SAS
+            // CAUCAYA SAS (MODAL TITLE BREAK)
             'g2': {
-                title: "CONSTRUCTION_BRANDING",
+                title: "CONSTRUCTION_<br class='md:hidden'>BRANDING",
                 desc: "Directed the brand identity development for a construction firm, establishing a robust visual foundation through custom logo design and a strategic color palette. I further expanded the brand’s reach by developing a conversion-focused website, ensuring a professional and impactful digital presence designed for client acquisition.",
                 meta: ["CLIENT: Hugo Mohales", "YEAR: 2025-Now", "ROLE: Graphic Designer", "TOOLS: Adobe Suite"],
                 images: [
@@ -690,9 +851,9 @@
                 ]
             },
 
-            // JO-EBIKES
+            // JO-EBIKES (MODAL TITLE BREAK)
             'g3': {
-                title: "MOBILITY_E_COMMERCE",
+                title: "MOBILITY_<br class='md:hidden'>E_COMMERCE",
                 desc: "Enhanced the user interface and digital strategy for a specialized mobility platform. By optimizing the website's visual hierarchy and navigation, I improved customer engagement and ensured a modern, cohesive digital experience for the rental and sales market.",
                 meta: ["CLIENT: Jo-ebikes", "YEAR: 2025", "ROLE: Graphic Designer", "TOOLS: Adobe Suite, HTML"],
                 images: [
@@ -703,9 +864,9 @@
                 ]
             },
 
-            // EL COMAL
+            // EL COMAL (MODAL TITLE BREAK)
             'g4': {
-                title: "RESTAURANT_REBRANDING",
+                title: "RESTAURANT_<br class='md:hidden'>REBRANDING",
                 desc: "Transformed the restaurant’s visual presence by creating a custom, high-character identity. Beyond the primary logo redesign, I established a cohesive aesthetic across various brand touchpoints and designed strategic digital marketing assets to amplify visibility and strengthen market positioning.",
                 meta: ["CLIENT: Private", "YEAR: 2024", "ROLE: Graphic Designer", "TOOLS: Adobe Suite"],
                 images: [
@@ -716,9 +877,9 @@
                 ]
             },
 
-            // MULTI SECTOR STRATEGY
+            // MULTI SECTOR STRATEGY (MODAL TITLE BREAK)
             'g5': {
-                title: "MULTI_SECTOR_STRATEGY",
+                title: "MULTI_SECTOR_<br class='md:hidden'>STRATEGY",
                 desc: "Provided comprehensive creative and strategic support for a diverse portfolio of brands. My work spanned from designing unique logos and full brand identities to executing digital marketing strategies, developing cohesive visual systems and high-performing campaigns tailored to each market.",
                 meta: ["CLIENT: TVM, Rousse Rivera, Frutigel, RK", "YEAR: 2022-Now", "ROLE: Digital Marketer", "TOOLS: Adobe Suite, Meta Ads"],
                 images: [
@@ -729,9 +890,9 @@
                 ]
             },
 
-            // WANDERLUST
+            // WANDERLUST (MODAL TITLE BREAK + CORRECTION)
             'g6': {
-                title: "APPAREL_MARKETING",
+                title: "APPAREL_<br class='md:hidden'>MARKETING",
                 desc: "Developed the visual foundations for this apparel brand, including the primary logo design and brand identity. I also executed various e-marketing campaigns and digital advertisements designed to drive brand awareness and customer engagement.",
                 meta: ["CLIENT: Private", "YEAR: 2023-2025", "ROLE: Graphic Designer, Illustrator", "TOOLS: Adobe Suite"],
                 images: [
@@ -794,7 +955,10 @@
             sfxClick.currentTime = 0; sfxClick.play();
             const data = projectData[id];
             if(!data) return;
-            modalTitle.textContent = data.title;
+            
+            // IMPORTANTE: USAMOS INNERHTML PARA QUE EL <BR> FUNCIONE EN EL MODAL
+            modalTitle.innerHTML = data.title;
+            
             modalDesc.textContent = data.desc;
             modalMeta.innerHTML = data.meta.map(item => `<li>> ${item}</li>`).join('');
             
@@ -837,7 +1001,7 @@
         }
 
         function finishBoot() {
-            sfxBoot.play().catch(() => {});
+            // ELIMINADO EL SFX BOOT AQUÍ TAMBIÉN
             bootScreen.classList.add('fade-out-screen');
             document.getElementById('main-interface').classList.remove('opacity-0');
             body.classList.add('loaded');
@@ -855,6 +1019,119 @@
             setTimeout(typeLine, 300);
         });
 
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const userLang = navigator.language || navigator.userLanguage; 
+            
+            if (userLang.startsWith('es')) {
+                console.log("System Language Detected: SPANISH. Applying translation patch...");
+
+                // --- UI TRANSLATION ---
+                const navItems = document.querySelectorAll('.nav-item');
+                if(navItems[0]) navItems[0].innerText = "Índice";
+                if(navItems[1]) navItems[1].innerText = "Identidad";
+                if(navItems[2]) navItems[2].innerText = "Archivo";
+                
+                const accessBtn = document.getElementById('nav-contact-btn');
+                if(accessBtn) accessBtn.innerHTML = "Acceso <span class='text-lg leading-none'>›</span>";
+
+                const heroSubtitle = document.querySelector('#hero p.text-cockpit-amber.uppercase');
+                if(heroSubtitle) heroSubtitle.innerText = "BIENVENIDO AL ESTADO DE FLUJO.";
+
+                const identityTitle = document.querySelector('#identity h2');
+                if(identityTitle) identityTitle.innerHTML = "PROTOCOLO<span class='text-cockpit-amber'>_</span><br class='md:hidden'>IDENTIDAD";
+
+                const identityDesc = document.querySelector('#identity .text-xl.border-l-2');
+                if(identityDesc) identityDesc.innerText = "Operando en la intersección de la estructura y el caos. Un arquitecto digital obsesionado con la precisión y las experiencias de usuario inmersivas.";
+
+                const btnBio = document.getElementById('btn-decrypt-bio');
+                if(btnBio) btnBio.innerText = "DESENCRIPTAR BIO COMPLETA [+]";
+
+                const bioP = document.querySelectorAll('#bio-expanded p');
+                if(bioP.length > 0) {
+                    bioP[0].innerHTML = "<span class='text-cockpit-amber font-bold'>[ACCEDIENDO ARCHIVO CLASIFICADO...]</span><br><br>Con más de 5 años de experiencia creando contenido digital, gestionando redes sociales, desarrollando marcas y construyendo software. Soy el arquitecto detrás de las ideas.";
+                    bioP[1].innerText = "Me especializo en desarrollar experiencias de usuario memorables. Desde identidad de marca y diseño web hasta creación de video para marcas que buscan destacar. Mi método es preciso y limpio, maximizando las ideas del cliente en el menor tiempo posible bajo una metodología de 'Menos es más'.";
+                    bioP[2].innerText = "No solo creo contenido digital; diseño ecosistemas digitales memorables. Mi flujo de trabajo está optimizado para velocidad y resultados escalables.";
+                }
+                
+                const bioList = document.querySelectorAll('#bio-expanded strong');
+                if(bioList[0]) bioList[0].parentNode.innerHTML = "> <strong class='text-white'>HABILIDADES:</strong> Creación, maximización, optimización, adaptabilidad y gestión de proyectos.";
+                if(bioList[1]) bioList[1].parentNode.innerHTML = "> <strong class='text-white'>ARSENAL DIGITAL:</strong> Adobe Suite, Canva, HTML5, JavaScript, Google Suite.";
+                if(bioList[2]) bioList[2].parentNode.innerHTML = "> <strong class='text-cockpit-green'>ESTADO ACTUAL:</strong> LISTO PARA DESPLIEGUE.";
+
+                const archiveTitle = document.querySelector('#archive h2');
+                if(archiveTitle) archiveTitle.innerText = "EL ARCHIVO";
+                
+                const archiveSub = document.querySelector('#archive p.text-xs');
+                if(archiveSub) archiveSub.innerText = "/// DATOS DE PROYECTO CLASIFICADOS";
+
+                const filters = document.querySelectorAll('.filter-btn');
+                if(filters[0]) filters[0].innerText = "TODO";
+                if(filters[1]) filters[1].innerText = "GRÁFICO (G)";
+                if(filters[2]) filters[2].innerText = "PROYECTOS (P)";
+                if(filters[3]) filters[3].innerText = "COMUNIDAD (C)";
+
+                const btnDecrypt = document.getElementById('btn-decrypt');
+                if(btnDecrypt) btnDecrypt.innerText = "DESENCRIPTAR MÁS DATOS [+]";
+
+                const footerTitle = document.querySelector('#footer-contact h2');
+                if(footerTitle) footerTitle.innerText = "INICIAR COLABORACIÓN";
+                
+                const footerBtn = document.getElementById('footer-contact-btn');
+                if(footerBtn) footerBtn.innerText = "ENVIAR TRANSMISIÓN";
+
+                const copyRight = document.querySelector('#footer-contact .text-gray-600');
+                if(copyRight) copyRight.innerText = "© 2025 THE VAULT SYSTEMS. TODOS LOS DERECHOS RESERVADOS.";
+
+                const contactTitle = document.querySelector('#contact-modal h2');
+                if(contactTitle) contactTitle.innerHTML = "ACCESO<br>PILOTO";
+                
+                const contactSub = document.querySelector('#contact-modal p.text-cockpit-amber');
+                if(contactSub) contactSub.innerText = "/// ESTABLECER CONEXIÓN";
+
+                const contactLabels = document.querySelectorAll('#contact-modal .text-gray-500.uppercase');
+                if(contactLabels[0]) contactLabels[0].innerText = "LÍNEA SEGURA";
+                if(contactLabels[1]) contactLabels[1].innerText = "ENLACE DIGITAL";
+                if(contactLabels[2]) contactLabels[2].innerText = "FEED VISUAL";
+                
+                const copyBtns = document.querySelectorAll('#contact-modal button.uppercase, #contact-modal a.uppercase');
+                if(copyBtns[0]) copyBtns[0].innerText = "COPIAR NUM";
+                if(copyBtns[1]) copyBtns[1].innerText = "COPIAR DIR";
+                if(copyBtns[2]) copyBtns[2].innerText = "ABRIR";
+
+                // --- DATA TRANSLATION ---
+                if(typeof projectData !== 'undefined') {
+                    projectData['g1'].desc = "Dirigí la evolución visual completa de la marca, supervisando todas las fases creativas para establecer una identidad profesional e impactante. Mi trabajo incluyó el diseño de activos clave de marca y mockups, manteniendo un alto estándar de consistencia estética.";
+                    projectData['g1'].meta[2] = "ROL: Director Creativo";
+
+                    projectData['g2'].desc = "Dirigí el desarrollo de identidad de marca para una firma de construcción, estableciendo una base visual robusta mediante diseño de logotipo personalizado. Expandí el alcance de la marca desarrollando un sitio web enfocado en conversión.";
+                    projectData['g2'].meta[2] = "ROL: Diseñador Gráfico";
+
+                    projectData['g3'].desc = "Mejoré la interfaz de usuario y estrategia digital para una plataforma de movilidad. Optimizando la jerarquía visual y navegación, mejoré el engagement del cliente para el mercado de renta y venta.";
+                    projectData['g3'].meta[2] = "ROL: Diseñador Gráfico";
+
+                    projectData['g4'].desc = "Transformé la presencia visual del restaurante creando una identidad personalizada y con carácter. Más allá del rediseño del logo, establecí una estética cohesiva y diseñé activos de marketing digital.";
+                    projectData['g4'].meta[2] = "ROL: Diseñador Gráfico";
+
+                    projectData['g5'].desc = "Provisión de soporte creativo y estratégico integral para un portafolio diverso. Desde diseño de logos únicos hasta ejecución de estrategias de marketing digital y sistemas visuales cohesivos.";
+                    projectData['g5'].meta[2] = "ROL: Marketer Digital";
+
+                    projectData['g6'].desc = "Desarrollé los cimientos visuales para esta marca de ropa, incluyendo logo e identidad. También ejecuté varias campañas de e-marketing y anuncios digitales.";
+                    projectData['g6'].meta[2] = "ROL: Diseñador Gráfico, Ilustrador";
+
+                    projectData['p3'].desc = "Establecí la identidad visual completa, incluyendo logo y mascota de marca. Dirigí la estrategia de marketing digital creando campañas segmentadas para fortalecer la presencia de mercado.";
+                    projectData['p3'].meta[2] = "ROL: Ilustrador, Diseñador Gráfico";
+
+                    projectData['p1'].desc = "Desarrollé y lancé un ecosistema de software integrado con soluciones SaaS ERP, SAG y POS. Diseñado para optimizar operaciones de negocio, gestión de equipos y eficiencia operativa.";
+                    projectData['p1'].meta[2] = "ROL: Propietario";
+
+                    projectData['p2'].desc = "Gestioné el desarrollo creativo de diseños de joyería únicos, produciendo arte conceptual y renders de alta calidad. Aseguré consistencia con la estética de la marca empujando los límites del diseño moderno.";
+                    projectData['p2'].meta[2] = "ROL: Diseñador Gráfico";
+                }
+            }
+        });
     </script>
 </body>
 </html>
